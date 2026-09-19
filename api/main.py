@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import config
 from retrieval.pipeline import IntentCartPipeline
+from retrieval.image_resolver import load_cache, extract_clean_id, resolve_single_product
 from run_ml_pipeline import parse_query_intent_rule_based
 from llm.intent_extractor import intent_extractor
 from llm.adapter import map_schema_to_pipeline_args
@@ -140,13 +141,31 @@ async def search_api(req: SearchInput):
         if schema.hard_constraints.excluded_colors:
             negative_prefs.extend([f"no {c}" for c in schema.hard_constraints.excluded_colors])
 
-        # Normalize results strictly matching Section 7 schema
+        # Normalize results strictly matching Section 7 schema with real Myntra photos and purchase URLs
+        image_cache = load_cache()
         formatted_results = []
         for item in ml_output["results"]:
             details = dict(item["product_details"])
-            # Ensure id and title are present in product dict
-            details["id"] = item["product_id"]
+            raw_id = item["product_id"]
+            clean_id = extract_clean_id(raw_id)
+            details["id"] = raw_id
+            details["clean_id"] = clean_id
             details["title"] = item["title"]
+
+            # Real Purchase URL on Myntra
+            prod_url = f"https://www.myntra.com/{clean_id}"
+            details["product_url"] = prod_url
+
+            # Real Original Dataset Image from Myntra
+            cached_entry = image_cache.get(clean_id)
+            if cached_entry and cached_entry.get("image_url"):
+                details["image_url"] = cached_entry["image_url"]
+            elif not details.get("image_url") or details.get("image_url") == "unknown" or str(details.get("image_url")).endswith(f"{clean_id}.jpg"):
+                # Dynamically resolve real photo via product ID
+                _, real_img, _ = resolve_single_product(clean_id)
+                if real_img:
+                    details["image_url"] = real_img
+                    image_cache[clean_id] = {"image_url": real_img, "product_url": prod_url}
 
             formatted_results.append({
                 "rank": item["rank"],

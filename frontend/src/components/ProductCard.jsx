@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, Check, Star, Tag, Layers, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp, Check, Star, Sparkles, ExternalLink, ShieldCheck } from 'lucide-react';
 
 export default function ProductCard({ item, rank }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -11,47 +11,74 @@ export default function ProductCard({ item, rank }) {
   const scoreBreakdown = item.score_breakdown || {};
   const evidence = item.matched_requirements || [];
 
-  // Safe fallback image for fashion apparel
+  // Extract clean ID & real Myntra URL
+  const cleanId = product.clean_id || String(product.id || '').replace('MYN_ST_', '').replace('MYN_', '');
+  const productUrl = product.product_url || `https://www.myntra.com/${cleanId}`;
+
+  // Safe fallback image if network or CDN blocks image
   const fallbackImg = 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=80';
   const displayImg = !imgError && product.image_url && product.image_url !== 'unknown'
     ? product.image_url
     : fallbackImg;
+
+  const isOriginalImage = !imgError && product.image_url && product.image_url.includes('assets.myntassets.com');
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: rank * 0.08 }}
-      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full"
+      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full group"
     >
-      {/* Product Image & Top Badges */}
-      <div className="relative aspect-[3/4] w-full bg-[#F3F3F0] overflow-hidden group">
+      {/* Product Image & Top Badges — Clickable to open on Myntra */}
+      <a
+        href={productUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative aspect-[3/4] w-full bg-[#F3F3F0] overflow-hidden block cursor-pointer"
+        title={`View ${product.title} on Myntra`}
+      >
         <img
           src={displayImg}
           alt={product.title}
           onError={() => setImgError(true)}
-          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-103"
+          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-104"
           loading="lazy"
         />
 
+        {/* Hover overlay hint */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <span className="bg-white/95 backdrop-blur-xs text-[#171717] text-xs font-semibold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+            <span>View on Myntra</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </span>
+        </div>
+
         {/* Rank Badge */}
-        <div className="absolute top-2.5 left-2.5 bg-[#171717]/90 backdrop-blur-xs text-white text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-xs flex items-center gap-1">
+        <div className="absolute top-2.5 left-2.5 bg-[#171717]/90 backdrop-blur-xs text-white text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-xs flex items-center gap-1 z-10">
           <span>#{rank}</span>
           <span className="text-amber-400">★</span>
         </div>
 
-        {/* Stock Status Badge */}
-        {product.in_stock && (
-          <div className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-xs text-emerald-700 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200">
-            In Stock
+        {/* Original Dataset Verification Badge */}
+        {isOriginalImage ? (
+          <div className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-xs text-emerald-800 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200 shadow-2xs flex items-center gap-1 z-10">
+            <ShieldCheck className="w-3 h-3 text-emerald-600" />
+            <span>Original Photo</span>
           </div>
+        ) : (
+          product.in_stock && (
+            <div className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-xs text-emerald-700 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200 z-10">
+              In Stock
+            </div>
+          )
         )}
 
         {/* Category Pill on Image Bottom */}
-        <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-[#171717] text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md">
+        <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-[#171717] text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md z-10">
           {product.category || 'Apparel'} • {product.gender || 'Unisex'}
         </div>
-      </div>
+      </a>
 
       {/* Card Details */}
       <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between">
@@ -71,11 +98,19 @@ export default function ProductCard({ item, rank }) {
 
           {/* Title */}
           <h3 className="text-sm sm:text-base font-semibold text-[#171717] line-clamp-2 leading-snug mb-3">
-            {product.title}
+            <a
+              href={productUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-neutral-600 transition-colors"
+              title={`View ${product.title} on Myntra`}
+            >
+              {product.title}
+            </a>
           </h3>
 
           {/* Price */}
-          <div className="flex items-baseline gap-2 mb-4">
+          <div className="flex items-baseline gap-2 mb-3.5">
             <span className="text-lg sm:text-xl font-bold text-[#171717]">
               ₹{Number(product.price).toLocaleString()}
             </span>
@@ -206,6 +241,17 @@ export default function ProductCard({ item, rank }) {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Buy on Myntra Action Button */}
+          <a
+            href={productUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full mt-3 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-[#171717] hover:bg-[#262626] text-white text-xs font-semibold shadow-2xs transition-all duration-200 touch-manipulation group"
+          >
+            <span>Buy on Myntra</span>
+            <ExternalLink className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-colors" />
+          </a>
         </div>
       </div>
     </motion.div>
