@@ -1,0 +1,27 @@
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IntentCart Artifacts & Large Binaries
+artifacts/product_embeddings.npy
+artifacts/product_index.faiss
+
+# Raw data downloads
+data/raw/
+
+# Secrets & Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE / OS metadata
+.idea/
+.vscode/
+*.swp
+.DS_Store

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "Q01",
+    "category": "Wedding",
+    "query": "formal men kurta for a wedding ceremony",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding", "preferences": ["formal"]}
+  },
+  {
+    "id": "Q02",
+    "category": "Wedding",
+    "query": "traditional wedding guest ethnic kurta for men",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding", "preferences": ["traditional"]}
+  },
+  {
+    "id": "Q03",
+    "category": "Summer",
+    "query": "breathable summer kurta for men",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"season": "summer", "preferences": ["breathable"]}
+  },
+  {
+    "id": "Q04",
+    "category": "Summer",
+    "query": "lightweight pure cotton summer kurta",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"season": "summer", "preferences": ["lightweight", "cotton"]}
+  },
+  {
+    "id": "Q05",
+    "category": "Budget",
+    "query": "men kurta under 2000",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "max_price": 2000, "in_stock_only": true},
+    "soft_intent": {}
+  },
+  {
+    "id": "Q06",
+    "category": "Budget",
+    "query": "affordable daily wear kurta under 1500",
+    "hard_constraints": {"category": "Kurta", "max_price": 1500, "in_stock_only": true},
+    "soft_intent": {"preferences": ["comfortable", "daily"]}
+  },
+  {
+    "id": "Q07",
+    "category": "Pattern Exclusion",
+    "query": "men solid kurta no floral prints",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "excluded_patterns": ["floral"], "in_stock_only": true},
+    "soft_intent": {"preferences": ["minimal", "solid"]}
+  },
+  {
+    "id": "Q08",
+    "category": "Pattern Exclusion",
+    "query": "wedding kurta without floral patterns",
+    "hard_constraints": {"category": "Kurta", "excluded_patterns": ["floral"], "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding"}
+  },
+  {
+    "id": "Q09",
+    "category": "Style",
+    "query": "minimalist clean solid kurta",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"preferences": ["minimal", "solid"]}
+  },
+  {
+    "id": "Q10",
+    "category": "Style",
+    "query": "classic elegant kurta for men",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"preferences": ["classic", "elegant"]}
+  },
+  {
+    "id": "Q11",
+    "category": "Material",
+    "query": "pure cotton men kurta",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"preferences": ["cotton"]}
+  },
+  {
+    "id": "Q12",
+    "category": "Material",
+    "query": "viscose rayon comfortable kurta",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"preferences": ["breathable", "comfortable"]}
+  },
+  {
+    "id": "Q13",
+    "category": "Gender",
+    "query": "women straight kurta for office wear",
+    "hard_constraints": {"gender": "Women", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "formal"}
+  },
+  {
+    "id": "Q14",
+    "category": "Gender",
+    "query": "women floral dress for vacation",
+    "hard_constraints": {"gender": "Women", "in_stock_only": true},
+    "soft_intent": {"preferences": ["floral"], "occasion": "casual"}
+  },
+  {
+    "id": "Q15",
+    "category": "Gender",
+    "query": "men formal ethnic wear",
+    "hard_constraints": {"gender": "Men", "in_stock_only": true},
+    "soft_intent": {"occasion": "formal"}
+  },
+  {
+    "id": "Q16",
+    "category": "Formal/Casual",
+    "query": "casual cotton daily kurta",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "casual", "preferences": ["comfortable"]}
+  },
+  {
+    "id": "Q17",
+    "category": "Formal/Casual",
+    "query": "formal black top for women under 2000",
+    "hard_constraints": {"gender": "Women", "max_price": 2000, "in_stock_only": true},
+    "soft_intent": {"occasion": "formal", "preferences": ["minimal"]}
+  },
+  {
+    "id": "Q18",
+    "category": "Comfort",
+    "query": "super comfortable breathable clothing for hot summer",
+    "hard_constraints": {"in_stock_only": true},
+    "soft_intent": {"season": "summer", "preferences": ["comfortable", "breathable"]}
+  },
+  {
+    "id": "Q19",
+    "category": "Comfort",
+    "query": "soft everyday cotton clothes for men",
+    "hard_constraints": {"gender": "Men", "in_stock_only": true},
+    "soft_intent": {"preferences": ["comfortable", "soft"]}
+  },
+  {
+    "id": "Q20",
+    "category": "Multiple Constraints",
+    "query": "men summer wedding kurta under 3000 no floral",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "max_price": 3000, "excluded_patterns": ["floral"], "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding", "season": "summer", "preferences": ["minimal"]}
+  },
+  {
+    "id": "Q21",
+    "category": "Multiple Constraints",
+    "query": "women ethnic kurta under 2500 in stock",
+    "hard_constraints": {"gender": "Women", "category": "Kurta", "max_price": 2500, "in_stock_only": true},
+    "soft_intent": {"occasion": "festive"}
+  },
+  {
+    "id": "Q22",
+    "category": "Multiple Constraints",
+    "query": "men blue kurta under 3000 for wedding",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "max_price": 3000, "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding"}
+  },
+  {
+    "id": "Q23",
+    "category": "Budget",
+    "query": "budget festive kurta under 1800",
+    "hard_constraints": {"category": "Kurta", "max_price": 1800, "in_stock_only": true},
+    "soft_intent": {"occasion": "festive"}
+  },
+  {
+    "id": "Q24",
+    "category": "Pattern Exclusion",
+    "query": "solid men clothing without prints or flowers",
+    "hard_constraints": {"gender": "Men", "excluded_patterns": ["floral", "printed"], "in_stock_only": true},
+    "soft_intent": {"preferences": ["minimal", "solid"]}
+  },
+  {
+    "id": "Q25",
+    "category": "Summer",
+    "query": "airy cool kurta for afternoon ceremony",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"season": "summer", "preferences": ["airy", "breathable"]}
+  },
+  {
+    "id": "Q26",
+    "category": "Style",
+    "query": "festive ornate kurta for brother wedding",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding", "preferences": ["festive"]}
+  },
+  {
+    "id": "Q27",
+    "category": "Material",
+    "query": "breathable cotton kurta pyjama set",
+    "hard_constraints": {"category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"preferences": ["cotton", "breathable"]}
+  },
+  {
+    "id": "Q28",
+    "category": "Gender",
+    "query": "men yellow kurta for haldi function",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "in_stock_only": true},
+    "soft_intent": {"occasion": "festive"}
+  },
+  {
+    "id": "Q29",
+    "category": "Budget",
+    "query": "men ethnic wear under 3500",
+    "hard_constraints": {"gender": "Men", "max_price": 3500, "in_stock_only": true},
+    "soft_intent": {"occasion": "wedding"}
+  },
+  {
+    "id": "Q30",
+    "category": "Multiple Constraints",
+    "query": "comfortable minimal summer wedding kurta for men under 4000 no floral",
+    "hard_constraints": {"gender": "Men", "category": "Kurta", "max_price": 4000, "excluded_patterns": ["floral"], "in_stock_only": true},
+    "soft_intent": {"preferences": ["minimal", "breathable", "comfortable"], "occasion": "wedding", "season": "summer"}
+  }
+]
