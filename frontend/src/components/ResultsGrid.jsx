@@ -20,8 +20,8 @@ export default function ResultsGrid({ results }) {
         </span>
       </div>
 
-      {/* Fully Responsive Grid: 1 col on mobile (<640px), 2 col on tablet (640-1024px), 3 col on desktop (1024px+) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Fully Responsive Grid with items-start: prevents neighbor cards from stretching when one expands */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-start">
         {results.map((item, idx) => (
           <ProductCard key={item.product?.id || idx} item={item} rank={item.rank || idx + 1} />
         ))}

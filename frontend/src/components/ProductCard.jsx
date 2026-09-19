@@ -25,10 +25,11 @@ export default function ProductCard({ item, rank }) {
 
   return (
     <motion.div
+      layout="position"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: rank * 0.08 }}
-      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full group"
+      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-300 flex flex-col h-fit self-start w-full group"
     >
       {/* Product Image & Top Badges — Clickable to open on Myntra */}
       <a
