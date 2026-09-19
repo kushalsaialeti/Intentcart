@@ -7,7 +7,8 @@
  * - Fallback: relative path /api (via Vite proxy)
  */
 
-const CONFIGURED_API = import.meta.env.VITE_API_URL;
+const RAW_API = import.meta.env.VITE_API_URL;
+const CONFIGURED_API = RAW_API ? RAW_API.replace(/\/+$/, '') : null;
 const DEFAULT_API = 'http://127.0.0.1:8000';
 
 async function fetchWithFallback(endpointPath, options) {

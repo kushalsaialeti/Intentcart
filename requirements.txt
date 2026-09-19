@@ -1,18 +1,14 @@
-# Core Machine Learning & Embeddings
-sentence-transformers==6.1.0
-torch==2.14.0
-faiss-cpu==1.15.1
-transformers==5.17.0
-scikit-learn==1.9.1
-numpy==2.5.3
-
-# Data Processing & Storage
-pandas==3.0.6
-scipy==1.18.1
-
-# API & Web Service
-fastapi==0.141.1
-uvicorn==0.53.0
-pydantic==2.13.5
-httpx==0.28.1
-python-dotenv==1.2.3
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+sentence-transformers
+faiss-cpu
+transformers
+scikit-learn
+numpy
+pandas
+scipy
+fastapi
+uvicorn
+pydantic
+httpx
+python-dotenv

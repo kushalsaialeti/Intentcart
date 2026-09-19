@@ -1,0 +1,27 @@
+name: IntentCart Keep-Alive Cron
+
+on:
+  schedule:
+    # Runs every 14 minutes (Render free instances spin down after 15m)
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping IntentCart Backend Health Endpoint
+        run: |
+          if [ -n "${{ secrets.RENDER_URL }}" ]; then
+            echo "Pinging ${{ secrets.RENDER_URL }}/api/health ..."
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_URL }}/api/health")
+            echo "HTTP Status Code: $HTTP_CODE"
+            if [ "$HTTP_CODE" -eq 200 ]; then
+              echo "SUCCESS: Backend is warm and healthy."
+            else
+              echo "WARNING: Backend returned status $HTTP_CODE"
+            fi
+          else
+            echo "NOTE: RENDER_URL secret is not yet configured in repository settings."
+            echo "Once your Render Web Service is deployed, add RENDER_URL to Settings -> Secrets and variables -> Actions."
+          fi

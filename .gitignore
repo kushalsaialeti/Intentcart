@@ -10,7 +10,6 @@ __pycache__/
 
 # IntentCart Artifacts & Large Binaries
 artifacts/product_embeddings.npy
-artifacts/product_index.faiss
 
 # Raw data downloads
 data/raw/

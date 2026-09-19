@@ -36,19 +36,26 @@ app = FastAPI(
     version="2.1.0"
 )
 
-# Configure CORS for local React development
+# Configure CORS for local development and cloud deployments (Vercel & Custom)
+frontend_url = os.getenv("FRONTEND_URL", "")
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
+if frontend_url:
+    allowed_origins.extend([u.strip() for u in frontend_url.split(",") if u.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Singleton ML Pipeline
 pipeline: Optional[IntentCartPipeline] = None
@@ -74,6 +81,16 @@ class PureMLSearchRequest(BaseModel):
     top_k: Optional[int] = Field(default=config.FINAL_K, ge=1, le=20)
 
 # --- Endpoints ---
+
+@app.get("/", tags=["Monitoring"])
+def root():
+    """Root entrypoint providing service status and quick links."""
+    return {
+        "service": "IntentCart AI API",
+        "status": "online",
+        "docs": "/docs",
+        "health": "/api/health"
+    }
 
 @app.get("/api/health", tags=["Monitoring"])
 @app.get("/health", tags=["Monitoring"])
@@ -254,4 +271,5 @@ async def discover_products_ai(req: SearchInput):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api.main:app", host="127.0.0.1", port=8000, reload=False)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("api.main:app", host="0.0.0.0", port=port, reload=False)
