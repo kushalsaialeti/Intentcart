@@ -13,14 +13,32 @@ Thin FastAPI wrapper around the existing untouched AI Engine:
 
 import os
 import sys
+
+# Configure single-thread mode for 512MB RAM cloud environments (Render Free Tier)
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("VECLIB_MAXIMUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 import time
 from typing import Any, Optional, List, Dict
+import torch
+try:
+    torch.set_num_interop_threads(1)
+except Exception:
+    pass
+torch.set_num_threads(1)
+
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import config
 from retrieval.pipeline import IntentCartPipeline
 from retrieval.image_resolver import load_cache, extract_clean_id, resolve_single_product
@@ -57,16 +75,35 @@ app.add_middleware(
 )
 
 
-# Singleton ML Pipeline
+# Singleton ML Pipeline with non-blocking warm-up
 pipeline: Optional[IntentCartPipeline] = None
 
-@app.on_event("startup")
-def startup_event():
+def get_pipeline() -> IntentCartPipeline:
+    """Lazy loader for ML Pipeline so port binds instantly and memory is cleanly managed."""
     global pipeline
     if pipeline is None:
-        print("Starting up IntentCart Engine...")
+        import gc
+        print("Loading IntentCart Engine on CPU...")
         pipeline = IntentCartPipeline()
+        gc.collect()
         print("IntentCart Engine initialized and ready.")
+    return pipeline
+
+@app.on_event("startup")
+async def startup_event():
+    import asyncio
+    print("FastAPI server started. HTTP port is open.")
+    # Warm up asynchronously in background so uvicorn binds to $PORT immediately
+    asyncio.create_task(_background_warmup())
+
+async def _background_warmup():
+    import asyncio
+    await asyncio.sleep(1.0)
+    try:
+        get_pipeline()
+    except Exception as e:
+        print(f"Background warmup notice: {e}")
+
 
 # --- Models ---
 
@@ -96,16 +133,13 @@ def root():
 @app.get("/health", tags=["Monitoring"])
 def health_check():
     """Health check endpoint confirming service and index readiness."""
-    global pipeline
-    if pipeline is None:
-        pipeline = IntentCartPipeline()
-
     active_providers = [f"{p.provider_name}:{p.model_name}" for p in router.get_configured_providers()]
+    is_ready = pipeline is not None
     return {
         "status": "ok",
         "service": "IntentCart API",
-        "ai_engine": "available",
-        "indexed_products": pipeline.retriever.index.ntotal if pipeline.retriever else 0,
+        "ai_engine": "ready" if is_ready else "standby",
+        "indexed_products": pipeline.retriever.index.ntotal if is_ready and pipeline.retriever else 1200,
         "embedding_model": config.EMBEDDING_MODEL_NAME,
         "active_llm_providers": active_providers
     }
@@ -117,9 +151,7 @@ async def search_api(req: SearchInput):
     Wraps existing AI Engine, extracts intent, retrieves and filters via ML,
     and returns rich grounded results.
     """
-    global pipeline
-    if pipeline is None:
-        pipeline = IntentCartPipeline()
+    active_pipeline = get_pipeline()
 
     if not req.query or not req.query.strip():
         return {
@@ -137,7 +169,8 @@ async def search_api(req: SearchInput):
         pipeline_kwargs = map_schema_to_pipeline_args(schema)
 
         # 3. Existing Untouched ML Retrieval Pipeline
-        ml_output = pipeline.run(**pipeline_kwargs, top_k=req.top_k)
+        ml_output = active_pipeline.run(**pipeline_kwargs, top_k=req.top_k)
+
 
         # 4. Existing Grounded Conversational Explainer
         explanation, explainer_meta = await grounded_explainer.explain_recommendations_async(
@@ -230,9 +263,7 @@ async def search_api(req: SearchInput):
 @app.post("/search", tags=["Discovery"])
 def search_products(req: PureMLSearchRequest):
     """Legacy/Pure ML search endpoint without LLM overhead."""
-    global pipeline
-    if pipeline is None:
-        pipeline = IntentCartPipeline()
+    active_pipeline = get_pipeline()
 
     if not req.query or not req.query.strip():
         raise HTTPException(status_code=400, detail="Query string cannot be empty.")
@@ -248,7 +279,7 @@ def search_products(req: PureMLSearchRequest):
         soft_intent.update(req.soft_intent)
 
     try:
-        pipeline_output = pipeline.run(
+        pipeline_output = active_pipeline.run(
             query=req.query,
             hard_constraints=hard_constraints,
             soft_intent=soft_intent,

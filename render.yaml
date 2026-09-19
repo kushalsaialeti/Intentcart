@@ -2,13 +2,25 @@ services:
   - type: web
     name: intentcart-api
     runtime: python
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python -c "import os; os.environ['OMP_NUM_THREADS']='1'; import torch; torch.set_num_threads(1); from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     plan: free
     region: oregon
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: MALLOC_ARENA_MAX
+        value: "2"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: TOKENIZERS_PARALLELISM
+        value: "false"
+      - key: WEB_CONCURRENCY
+        value: "1"
       - key: GROQ_API_KEY
         sync: false
       - key: GEMINI_API_KEY
