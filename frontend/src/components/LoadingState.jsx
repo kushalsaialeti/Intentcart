@@ -35,13 +35,13 @@ export default function LoadingState() {
       </motion.div>
 
       {/* Skeletons */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-white border border-[#E5E5E5] rounded-2xl p-4 flex flex-col gap-4 animate-pulse shadow-xs"
+            className="bg-white border border-[#E5E5E5] rounded-2xl p-3.5 sm:p-4 flex flex-col gap-4 animate-pulse shadow-xs"
           >
-            <div className="aspect-3/4 w-full bg-[#F3F3F0] rounded-xl" />
+            <div className="aspect-[3/4] w-full bg-[#F3F3F0] rounded-xl" />
             <div className="space-y-2">
               <div className="h-3 w-1/3 bg-[#F3F3F0] rounded" />
               <div className="h-4 w-5/6 bg-[#F3F3F0] rounded" />

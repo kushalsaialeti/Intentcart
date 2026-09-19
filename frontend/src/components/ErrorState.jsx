@@ -3,12 +3,12 @@ import { AlertCircle, RotateCcw } from 'lucide-react';
 
 export default function ErrorState({ error, onRetry }) {
   return (
-    <div className="w-full max-w-xl mx-auto my-12 bg-white border border-rose-200 rounded-2xl p-8 text-center shadow-xs">
-      <div className="w-12 h-12 mx-auto rounded-full bg-rose-50 flex items-center justify-center text-rose-600 mb-4">
-        <AlertCircle className="w-6 h-6" />
+    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-white border border-rose-200 rounded-2xl p-4 sm:p-8 text-center shadow-xs">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-rose-50 flex items-center justify-center text-rose-600 mb-3 sm:mb-4">
+        <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <h3 className="text-lg font-bold text-[#171717] mb-2">Something Went Wrong</h3>
-      <p className="text-sm text-[#737373] mb-5">
+      <h3 className="text-base sm:text-lg font-bold text-[#171717] mb-1.5 sm:mb-2">Something Went Wrong</h3>
+      <p className="text-xs sm:text-sm text-[#737373] mb-4 sm:mb-5">
         {error || 'Unable to complete search request. Please verify connection and try again.'}
       </p>
 

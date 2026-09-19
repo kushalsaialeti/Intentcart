@@ -3,12 +3,12 @@ import { SearchX, RefreshCw } from 'lucide-react';
 
 export default function EmptyState({ onReset }) {
   return (
-    <div className="w-full max-w-xl mx-auto my-12 bg-white border border-[#E5E5E5] rounded-2xl p-8 text-center shadow-xs">
-      <div className="w-12 h-12 mx-auto rounded-full bg-[#F3F3F0] flex items-center justify-center text-[#737373] mb-4">
-        <SearchX className="w-6 h-6" />
+    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-white border border-[#E5E5E5] rounded-2xl p-4 sm:p-8 text-center shadow-xs">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-[#F3F3F0] flex items-center justify-center text-[#737373] mb-3 sm:mb-4">
+        <SearchX className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <h3 className="text-lg font-bold text-[#171717] mb-2">No Exact Matches Found</h3>
-      <p className="text-sm text-[#737373] mb-5">
+      <h3 className="text-base sm:text-lg font-bold text-[#171717] mb-1.5 sm:mb-2">No Exact Matches Found</h3>
+      <p className="text-xs sm:text-sm text-[#737373] mb-4 sm:mb-5">
         Every product in the retrieved pool was excluded by one or more strict constraints (such as an exact pattern exclusion or budget cap).
       </p>
 

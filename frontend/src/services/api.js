@@ -2,20 +2,36 @@
  * IntentCart Frontend API Service
  * Module: src/services/api.js
  *
- * Interacts with FastAPI backend endpoints:
- * - POST /api/search
- * - GET  /api/health
+ * Connects directly to FastAPI backend with proxy fallback:
+ * - Primary: http://127.0.0.1:8000 (direct with CORS)
+ * - Fallback: relative path /api (via Vite proxy)
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const CONFIGURED_API = import.meta.env.VITE_API_URL;
+const DEFAULT_API = 'http://127.0.0.1:8000';
+
+async function fetchWithFallback(endpointPath, options) {
+  const primaryUrl = CONFIGURED_API ? `${CONFIGURED_API}${endpointPath}` : `${DEFAULT_API}${endpointPath}`;
+  
+  try {
+    const res = await fetch(primaryUrl, options);
+    if (res.ok || res.status === 400 || res.status === 422) {
+      return res;
+    }
+  } catch (err) {
+    console.warn(`Direct fetch to ${primaryUrl} failed, trying relative proxy...`, err);
+  }
+
+  // Fallback to relative path via Vite dev proxy
+  return await fetch(endpointPath, options);
+}
 
 export async function searchProducts(query, topK = 5) {
   if (!query || !query.trim()) {
     throw new Error('Search query cannot be empty');
   }
 
-  const endpoint = `${API_BASE}/api/search`;
-  const response = await fetch(endpoint, {
+  const response = await fetchWithFallback('/api/search', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +57,7 @@ export async function searchProducts(query, topK = 5) {
 
 export async function checkHealth() {
   try {
-    const response = await fetch(`${API_BASE}/api/health`);
+    const response = await fetchWithFallback('/api/health');
     if (!response.ok) return { status: 'offline' };
     return await response.json();
   } catch {

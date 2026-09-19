@@ -22,11 +22,10 @@ export default function ProductCard({ item, rank }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: rank * 0.08 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
+      className="bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col h-full"
     >
       {/* Product Image & Top Badges */}
-      <div className="relative aspect-3/4 w-full bg-[#F3F3F0] overflow-hidden group">
+      <div className="relative aspect-[3/4] w-full bg-[#F3F3F0] overflow-hidden group">
         <img
           src={displayImg}
           alt={product.title}
@@ -36,26 +35,26 @@ export default function ProductCard({ item, rank }) {
         />
 
         {/* Rank Badge */}
-        <div className="absolute top-3 left-3 bg-[#171717]/90 backdrop-blur-xs text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1">
+        <div className="absolute top-2.5 left-2.5 bg-[#171717]/90 backdrop-blur-xs text-white text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-xs flex items-center gap-1">
           <span>#{rank}</span>
           <span className="text-amber-400">★</span>
         </div>
 
         {/* Stock Status Badge */}
         {product.in_stock && (
-          <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs text-emerald-700 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200">
+          <div className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-xs text-emerald-700 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-200">
             In Stock
           </div>
         )}
 
         {/* Category Pill on Image Bottom */}
-        <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-xs text-[#171717] text-[11px] font-medium px-2 py-0.5 rounded-md">
+        <div className="absolute bottom-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-[#171717] text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md">
           {product.category || 'Apparel'} • {product.gender || 'Unisex'}
         </div>
       </div>
 
       {/* Card Details */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between">
         <div>
           {/* Brand & Rating */}
           <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -138,11 +137,12 @@ export default function ProductCard({ item, rank }) {
 
           {/* Toggle Why This Matches */}
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-between py-1 text-xs font-semibold text-[#171717] hover:text-[#737373] transition-colors"
+            className="w-full flex items-center justify-between py-2 text-xs font-semibold text-[#171717] hover:text-[#737373] transition-colors touch-manipulation cursor-pointer"
           >
             <span>{isExpanded ? 'Hide match breakdown' : 'Why this matches →'}</span>
-            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {isExpanded ? <ChevronUp className="w-4 h-4 shrink-0" /> : <ChevronDown className="w-4 h-4 shrink-0" />}
           </button>
 
           <AnimatePresence>

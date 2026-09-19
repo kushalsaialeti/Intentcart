@@ -9,7 +9,7 @@ import LoadingState from './components/LoadingState';
 import EmptyState from './components/EmptyState';
 import ErrorState from './components/ErrorState';
 import { searchProducts } from './services/api';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function App() {
   const [query, setQuery] = useState('');
@@ -46,19 +46,19 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-[#FAFAF8] text-[#171717]">
       <Navbar />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
         {/* Hero & Search Section */}
-        <section className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3F3F0] text-xs font-semibold text-[#737373] border border-[#E5E5E5] mb-4 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Constraint-Aware Conversational Fashion Engine</span>
+        <section className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
+          <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 rounded-full bg-[#F3F3F0] text-[10px] sm:text-xs font-semibold text-[#737373] border border-[#E5E5E5] mb-3 sm:mb-4 shadow-2xs max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate sm:whitespace-normal">Constraint-Aware Conversational Fashion Engine</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-[#171717] tracking-tight leading-[1.15] mb-3 sm:mb-4">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#171717] tracking-tight leading-[1.18] sm:leading-[1.15] mb-2 sm:mb-3">
             Shop The Way You Think
           </h1>
 
-          <p className="text-sm sm:text-base text-[#737373] max-w-xl mx-auto mb-8 leading-relaxed">
+          <p className="text-xs sm:text-base text-[#737373] max-w-xl mx-auto mb-5 sm:mb-8 leading-relaxed px-1 sm:px-0">
             Describe what you need in natural language. We strictly enforce your constraints
             and rank products by true styling intent.
           </p>
@@ -116,10 +116,10 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E5E5] py-6 text-center text-xs text-[#737373]">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <footer className="border-t border-[#E5E5E5] py-4 sm:py-6 text-center text-[10px] sm:text-xs text-[#737373] safe-bottom">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
           <span>IntentCart AI — Multi-Model Racing & Grounded Fashion Retrieval</span>
-          <span className="text-[#A3A3A3]">1,200 Products Indexed • FAISS IndexFlatIP • Google Gemini & Groq</span>
+          <span className="text-[#A3A3A3]">1,200 Products • FAISS Dense Index • Google Gemini & Groq</span>
         </div>
       </footer>
     </div>
