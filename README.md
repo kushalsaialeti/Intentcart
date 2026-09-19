@@ -1,7 +1,7 @@
 # IntentCart — Constraint-Aware Conversational Fashion Discovery Engine
 
 <p align="center">
-  <img src="docs/images/intentcart_showcase.jpg" alt="IntentCart UI Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
+  <!-- <img src="docs/images/intentcart_showcase.jpg" alt="IntentCart UI Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" /> -->
 </p>
 
 <p align="center">
