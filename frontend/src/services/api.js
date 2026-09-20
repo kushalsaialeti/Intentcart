@@ -9,7 +9,7 @@
 
 const RAW_API = import.meta.env.VITE_API_URL;
 const CONFIGURED_API = RAW_API ? RAW_API.replace(/\/+$/, '') : null;
-const DEFAULT_API = 'http://127.0.0.1:8000';
+const DEFAULT_API = 'http://127.0.0.1:8000' || 'https://intentcart.onrender.com';
 
 async function fetchWithFallback(endpointPath, options) {
   const primaryUrl = CONFIGURED_API ? `${CONFIGURED_API}${endpointPath}` : `${DEFAULT_API}${endpointPath}`;

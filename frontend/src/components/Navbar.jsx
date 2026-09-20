@@ -15,7 +15,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#171717] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-xs">
-            I
+            <img src="/favicon.png" alt="Icon" />
           </div>
           <div>
             <span className="text-base sm:text-lg font-bold tracking-tight text-[#171717]">
