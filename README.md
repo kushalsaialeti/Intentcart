@@ -1,7 +1,7 @@
 # IntentCart — Constraint-Aware Conversational Fashion Discovery Engine
 
 <p align="center">
-  <img src="docs/images/intentcart_showcase.jpg" alt="IntentCart UI Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
+  <!-- <img src="docs/images/intentcart_showcase.jpg" alt="IntentCart UI Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" /> -->
 </p>
 
 <p align="center">
@@ -204,7 +204,6 @@ IntentCart's router orchestrates parallel racing between primary and fallback LL
 | **Mean Latency (P50)** | 510 ms | **285 ms** | 1.8 ms | **278 ms** |
 | **P90 Latency** | 780 ms | **420 ms** | 2.5 ms | **410 ms** |
 | **Rate Limit / Error Resilience** | 99.2% | 99.0% | 100.0% | **99.99%** |
-| **Cost per 1,000 Searches** | **$0.00** (Free Tier) | **$0.00** (Free Tier) | $0.00 | **$0.00** |
 
 ---
 
