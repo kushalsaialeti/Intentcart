@@ -22,19 +22,35 @@ def _load_system_prompt() -> str:
 SYSTEM_PROMPT = _load_system_prompt()
 
 def _clean_json_text(raw_text: str) -> str:
-    """Strips markdown code blocks, backticks, and extra whitespace."""
+    """Strips markdown code blocks, backticks, extra whitespace, and heals common JSON syntax anomalies."""
     text = raw_text.strip()
     if text.startswith("```"):
-        # Match ```json ... ``` or ``` ... ```
         match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
         if match:
             text = match.group(1).strip()
+    
     # Find outer curly braces
     start_idx = text.find("{")
     end_idx = text.rfind("}")
-    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-        text = text[start_idx : end_idx + 1]
+    if start_idx != -1:
+        if end_idx != -1 and end_idx > start_idx:
+            text = text[start_idx : end_idx + 1]
+        else:
+            text = text[start_idx:]
+
+    # Strip trailing commas before closing braces/brackets (e.g. `{"a": 1,}`)
+    text = re.sub(r",\s*([\]}])", r"\1", text)
+
+    # Balance unclosed brackets/braces if truncated
+    open_braces = text.count("{") - text.count("}")
+    open_brackets = text.count("[") - text.count("]")
+    if open_brackets > 0:
+        text += "]" * open_brackets
+    if open_braces > 0:
+        text += "}" * open_braces
+
     return text
+
 
 class IntentExtractor:
     def __init__(self):

@@ -119,7 +119,7 @@ class PureMLSearchRequest(BaseModel):
 
 # --- Endpoints ---
 
-@app.get("/", tags=["Monitoring"])
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Monitoring"])
 def root():
     """Root entrypoint providing service status and quick links."""
     return {
@@ -129,10 +129,11 @@ def root():
         "health": "/api/health"
     }
 
-@app.get("/api/health", tags=["Monitoring"])
-@app.get("/health", tags=["Monitoring"])
+@app.api_route("/api/health", methods=["GET", "HEAD"], tags=["Monitoring"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["Monitoring"])
 def health_check():
     """Health check endpoint confirming service and index readiness."""
+
     active_providers = [f"{p.provider_name}:{p.model_name}" for p in router.get_configured_providers()]
     is_ready = pipeline is not None
     return {

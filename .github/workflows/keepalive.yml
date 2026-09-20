@@ -2,8 +2,9 @@ name: IntentCart Keep-Alive Cron
 
 on:
   schedule:
-    # Runs every 14 minutes (Render free instances spin down after 15m)
-    - cron: '*/14 * * * *'
+    # Runs every 10 minutes (Render free instances sleep after 15m of inactivity)
+    # 10m provides a 5m safety buffer against GitHub Actions queue delays
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,16 +13,23 @@ jobs:
     steps:
       - name: Ping IntentCart Backend Health Endpoint
         run: |
-          if [ -n "${{ secrets.RENDER_URL }}" ]; then
-            echo "Pinging ${{ secrets.RENDER_URL }}/api/health ..."
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_URL }}/api/health")
-            echo "HTTP Status Code: $HTTP_CODE"
-            if [ "$HTTP_CODE" -eq 200 ]; then
-              echo "SUCCESS: Backend is warm and healthy."
-            else
-              echo "WARNING: Backend returned status $HTTP_CODE"
-            fi
+          TARGET_URL="${{ secrets.RENDER_URL }}"
+          if [ -z "$TARGET_URL" ]; then
+            TARGET_URL="https://intentcart-zg5o.onrender.com"
+          fi
+          
+          # Strip trailing slash
+          TARGET_URL="${TARGET_URL%/}"
+          
+          echo "Pinging ${TARGET_URL}/api/health ..."
+          # Uses lightweight HEAD request (-I) for zero payload overhead and instant response
+          HTTP_CODE=$(curl -s -I -o /dev/null -w "%{http_code}" "${TARGET_URL}/api/health")
+          echo "HTTP Status Code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 301 ] || [ "$HTTP_CODE" -eq 302 ]; then
+            echo "SUCCESS: Backend is warm, active, and healthy."
           else
-            echo "NOTE: RENDER_URL secret is not yet configured in repository settings."
-            echo "Once your Render Web Service is deployed, add RENDER_URL to Settings -> Secrets and variables -> Actions."
+            echo "WARNING: Backend returned status $HTTP_CODE. Retrying with GET..."
+            HTTP_CODE_GET=$(curl -s -o /dev/null -w "%{http_code}" "${TARGET_URL}/api/health")
+            echo "GET Status Code: $HTTP_CODE_GET"
           fi
