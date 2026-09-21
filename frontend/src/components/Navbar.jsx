@@ -10,26 +10,26 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FAFAF8]/90 backdrop-blur-md border-b border-[#E5E5E5] transition-all safe-top">
+    <header className="sticky top-0 z-50 bg-[#0a0a0e]/85 backdrop-blur-md border-b border-[#27272a] transition-all safe-top">
       <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#171717] text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-xs">
-            <img src="/favicon.png" alt="Icon" />
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/10 text-white flex items-center justify-center font-bold text-sm sm:text-base border border-white/10 shadow-xs">
+            <img src="/favicon.png" alt="Icon" className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-base sm:text-lg font-bold tracking-tight text-[#171717]">
-              INTENT<span className="font-light text-[#737373]">CART</span>
+            <span className="text-base sm:text-lg font-bold tracking-tight text-white">
+              INTENT<span className="font-light text-[#a1a1aa]">CART</span>
             </span>
           </div>
         </div>
 
         {/* Engine Status Badge */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-[#F3F3F0] text-[#171717] border border-[#E5E5E5]">
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-[#18181b]/90 text-[#f4f4f5] border border-[#27272a]">
             <span
               className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                health.status === 'ok' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                health.status === 'ok' ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-amber-400'
               }`}
             />
             <span>

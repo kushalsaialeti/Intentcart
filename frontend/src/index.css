@@ -2,12 +2,12 @@
 
 @layer base {
   :root {
-    --bg-main: #FAFAF8;
-    --surface: #FFFFFF;
-    --text-primary: #171717;
-    --text-muted: #737373;
-    --border-subtle: #E5E5E5;
-    --chip-bg: #F3F3F0;
+    --bg-main: #0a0a0e;
+    --surface: #131318;
+    --text-primary: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --border-subtle: #27272a;
+    --chip-bg: #18181b;
   }
 
   body {
@@ -56,9 +56,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4D4D0;
+  background: #27272a;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A8A8A2;
+  background: #3f3f46;
 }

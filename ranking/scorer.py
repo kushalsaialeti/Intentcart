@@ -130,7 +130,6 @@ class HybridScorer:
 
 
 def _run_self_tests():
-    """Runs verification of HybridScorer with sample candidates."""
     import json
 
     print("Running Hybrid Scorer Self-Tests...")
@@ -148,10 +147,7 @@ def _run_self_tests():
         "season": "summer"
     }
 
-    # Simulate 3 surviving candidates from FAISS vector search:
-    # 1. PROD_001 (Minimal Linen Kurta) - sim=0.7547
-    # 2. PROD_002 (Classic Cotton Kurta) - sim=0.6690
-    # 3. PROD_007 (Casual Linen Short Kurta) - sim=0.4582
+
     test_candidates = [
         (products["PROD_001"], 0.7547),
         (products["PROD_002"], 0.6690),

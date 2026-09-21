@@ -26,9 +26,9 @@ const EXAMPLES = [
 
 export default function ExampleChips({ onSelect, currentQuery, isLoading }) {
   return (
-    <div className="w-full max-w-3xl mx-auto mt-3 sm:mt-4">
+    <div className="w-full max-w-3xl mx-auto mt-4 sm:mt-5">
       <div className="flex items-center gap-2 mb-2 text-left">
-        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#737373]">
+        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
           Try asking naturally:
         </span>
       </div>
@@ -42,10 +42,10 @@ export default function ExampleChips({ onSelect, currentQuery, isLoading }) {
               whileTap={{ scale: 0.97 }}
               disabled={isLoading}
               onClick={() => onSelect(item.query)}
-              className={`text-[11px] sm:text-xs px-2.5 sm:px-3 py-1.5 rounded-full border transition-all text-left whitespace-nowrap sm:whitespace-normal cursor-pointer active:opacity-80 touch-manipulation shrink-0 sm:shrink min-h-[32px] sm:min-h-[34px] flex items-center ${
+              className={`text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-full border transition-all text-left whitespace-nowrap sm:whitespace-normal cursor-pointer active:opacity-80 touch-manipulation shrink-0 sm:shrink min-h-[32px] sm:min-h-[34px] flex items-center ${
                 isActive
-                  ? 'bg-[#171717] text-white border-[#171717] shadow-2xs font-semibold'
-                  : 'bg-white text-[#171717] border-[#E5E5E5] hover:border-[#171717]/40 hover:bg-[#F3F3F0]'
+                  ? 'bg-white text-[#0a0a0e] border-white shadow-sm font-semibold'
+                  : 'bg-[#18181b]/70 backdrop-blur text-[#d4d4d8] border-[#27272a] hover:border-white/30 hover:bg-[#27272a] hover:text-white'
               }`}
             >
               {item.label}
