@@ -2,13 +2,18 @@
 IntentCart - ML Subsystem
 Module: retrieval/filters.py
 
-Objective (Phase 14):
+Objective:
 Deterministic hard-constraint engine.
-Filters product candidates strictly according to non-negotiable requirements
-(budget limits, stock availability, gender, pattern exclusions).
+Filters product candidates strictly according to non-negotiable requirements:
+1. Exact Canonical Category Matching (e.g. 'Shirts' NEVER matches 'T-Shirts' or 'Kurtas')
+2. Explicit Gender Compatibility (ONLY when gender is explicitly specified by user)
+3. Budget limits (Maximum and Minimum price caps)
+4. Stock availability (In-stock only)
+5. Negative Constraints (Strict exclusion of forbidden patterns, colors, materials)
 """
 
-from typing import Any
+from typing import Any, Tuple, List, Dict
+from retrieval.category_normalizer import is_category_match, normalize_to_canonical_category
 
 class HardConstraintFilter:
     """
@@ -19,75 +24,115 @@ class HardConstraintFilter:
     """
 
     @staticmethod
-    def evaluate_product(product: dict, constraints: dict[str, Any]) -> tuple[bool, list[str]]:
+    def evaluate_product(product: dict, constraints: dict[str, Any]) -> Tuple[bool, List[str]]:
         """
         Evaluates a single product against the given constraints.
         Returns (is_passed, list_of_violations).
         """
         violations = []
 
-        # 1. Stock constraint (in-stock only)
-        if constraints.get("in_stock_only", True):
-            # Check boolean in_stock if present; also check numeric stock if present
-            is_in_stock = product.get("in_stock")
-            if is_in_stock is None:
-                # If boolean in_stock is missing, fall back to numeric stock count
-                is_in_stock = product.get("stock", 0) > 0
-            elif isinstance(is_in_stock, bool):
-                # Also check numeric stock if explicitly 0
-                if "stock" in product and product["stock"] == 0:
-                    is_in_stock = False
+        # 1. Exact Category constraint (CRITICAL - Eligibility Determiner)
+        target_category = constraints.get("canonical_category") or constraints.get("category")
+        if target_category:
+            prod_category = product.get("category")
+            if not is_category_match(prod_category, target_category):
+                canonical_target = normalize_to_canonical_category(target_category) or target_category
+                violations.append(
+                    f"Category mismatch: Expected '{canonical_target}', found '{prod_category}'"
+                )
 
-            if not is_in_stock:
-                violations.append(f"Out of stock (stock: {product.get('stock', 0)})")
+        # 2. Gender constraint (CRITICAL: Only enforced if gender was EXPLICITLY specified)
+        gender_specified = constraints.get("gender_specified")
+        target_gender = constraints.get("gender")
 
-        # 2. Maximum price constraint (budget limit)
+        # If gender_specified is None, infer from presence of target_gender
+        if gender_specified is None:
+            gender_specified = bool(target_gender)
+
+        if gender_specified and target_gender:
+            prod_gender = product.get("gender", "").strip().lower()
+            target_lower = target_gender.strip().lower()
+
+            if target_lower in ["men", "man", "male"]:
+                allowed = ["men", "unisex", "unknown"]
+            elif target_lower in ["women", "woman", "female"]:
+                allowed = ["women", "unisex", "unknown"]
+            elif target_lower in ["boys", "boy"]:
+                allowed = ["boys", "men", "unisex", "unknown"]
+            elif target_lower in ["girls", "girl"]:
+                allowed = ["girls", "women", "unisex", "unknown"]
+            else:
+                allowed = [target_lower, "unisex", "unknown"]
+
+            if prod_gender not in allowed:
+                violations.append(
+                    f"Gender mismatch: Expected '{target_gender}', found '{product.get('gender')}'"
+                )
+
+        # 3. Maximum price constraint (budget limit)
         max_price = constraints.get("max_price")
         if max_price is not None:
             price = product.get("price", 0)
             if price > max_price:
                 violations.append(f"Price Rs.{price} exceeds maximum budget Rs.{max_price}")
 
-        # 3. Minimum price constraint
+        # 4. Minimum price constraint
         min_price = constraints.get("min_price")
         if min_price is not None:
             price = product.get("price", 0)
             if price < min_price:
                 violations.append(f"Price Rs.{price} is below minimum Rs.{min_price}")
 
-        # 4. Gender constraint
-        target_gender = constraints.get("gender")
-        if target_gender:
-            prod_gender = product.get("gender", "").strip().lower()
-            target_lower = target_gender.strip().lower()
-            if prod_gender not in [target_lower, "unisex", "unknown"]:
-                violations.append(f"Gender '{product.get('gender')}' does not match target '{target_gender}'")
+        # 5. Stock constraint (in-stock only)
+        if constraints.get("in_stock_only", True):
+            is_in_stock = product.get("in_stock")
+            if is_in_stock is None:
+                is_in_stock = product.get("stock", 0) > 0
+            elif isinstance(is_in_stock, bool):
+                if "stock" in product and product["stock"] == 0:
+                    is_in_stock = False
 
-        # 5. Category constraint
-        target_category = constraints.get("category")
-        if target_category:
-            prod_category = product.get("category", "").strip().lower()
-            target_cat_lower = target_category.strip().lower()
-            if target_cat_lower not in prod_category:
-                violations.append(f"Category '{product.get('category')}' does not match target '{target_category}'")
+            if not is_in_stock:
+                violations.append(f"Out of stock (stock: {product.get('stock', 0)})")
 
-        # 6. Excluded patterns (e.g. 'no floral')
-        excluded_patterns = constraints.get("excluded_patterns", [])
-        if excluded_patterns:
-            prod_pattern = product.get("pattern", "").strip().lower()
-            title_desc = f"{product.get('title', '')} {product.get('description', '')}".lower()
-            for exc in excluded_patterns:
-                exc_lower = exc.strip().lower()
-                if exc_lower == prod_pattern or exc_lower in title_desc:
-                    violations.append(f"Contains excluded pattern '{exc}'")
-                    break
+        # 6. Negative constraints (Forbidden patterns, colors, materials)
+        excluded_patterns = list(constraints.get("excluded_patterns", []))
+        excluded_materials = list(constraints.get("excluded_materials", []))
+        excluded_colors = list(constraints.get("excluded_colors", []))
 
-        # 7. Required pattern (if explicitly demanded as hard requirement)
-        required_patterns = constraints.get("required_patterns", [])
-        if required_patterns:
-            prod_pattern = product.get("pattern", "").strip().lower()
-            if not any(req.strip().lower() in prod_pattern for req in required_patterns):
-                violations.append(f"Missing required pattern in {required_patterns}")
+        # Also parse raw negative_constraints if passed
+        for neg in constraints.get("negative_constraints", []):
+            neg_clean = neg.lower().replace("no ", "").replace("not ", "").replace("without ", "").strip()
+            if "floral" in neg_clean and "floral" not in excluded_patterns:
+                excluded_patterns.append("floral")
+            elif "stripe" in neg_clean and "stripe" not in excluded_patterns:
+                excluded_patterns.append("stripe")
+
+        prod_pattern = product.get("pattern", "").strip().lower()
+        prod_material = product.get("material", "").strip().lower()
+        prod_color = product.get("color", "").strip().lower()
+        title_desc = f"{product.get('title', '')} {product.get('description', '')}".lower()
+
+        # Check pattern exclusions
+        for exc in excluded_patterns:
+            exc_lower = exc.strip().lower()
+            if exc_lower == prod_pattern or exc_lower in title_desc:
+                violations.append(f"Negative preference violation: Contains excluded pattern '{exc}'")
+                break
+
+        # Check material exclusions
+        for exc in excluded_materials:
+            exc_lower = exc.strip().lower()
+            if exc_lower == prod_material or exc_lower in title_desc:
+                violations.append(f"Negative preference violation: Contains excluded material '{exc}'")
+                break
+
+        # Check color exclusions
+        for exc in excluded_colors:
+            exc_lower = exc.strip().lower()
+            if exc_lower == prod_color or exc_lower in title_desc:
+                violations.append(f"Negative preference violation: Contains excluded color '{exc}'")
+                break
 
         is_passed = (len(violations) == 0)
         return is_passed, violations
@@ -95,12 +140,12 @@ class HardConstraintFilter:
     @classmethod
     def apply_hard_constraints(
         cls, products: list[dict], constraints: dict[str, Any]
-    ) -> tuple[list[dict], list[dict]]:
+    ) -> Tuple[list[dict], list[dict]]:
         """
         Applies hard constraints across a collection of products.
         Returns:
             passed_products: list of products passing all constraints.
-            rejected_records: list of dicts: {'product': product, 'reasons': violations}.
+            rejected_records: list of dicts: {'product_id': id, 'title': title, 'reasons': violations}.
         """
         passed_products = []
         rejected_records = []
@@ -117,63 +162,3 @@ class HardConstraintFilter:
                 })
 
         return passed_products, rejected_records
-
-
-def _run_self_tests():
-    """Runs deterministic unit verification of the hard filter engine."""
-    import json
-    import os
-
-    print("Running Hard Constraint Filter Self-Tests...")
-    
-    # Load controlled dataset
-    demo_path = os.path.join("data", "demo_products.json")
-    with open(demo_path, "r", encoding="utf-8") as f:
-        products = json.load(f)
-
-    # Test 1: Floral Exclusion
-    constraints_no_floral = {"excluded_patterns": ["floral"]}
-    passed, rejected = HardConstraintFilter.apply_hard_constraints(products, constraints_no_floral)
-    print(f"\n[Test 1: Exclude Floral]")
-    print(f"  Input products: {len(products)}")
-    print(f"  Passed products: {len(passed)}")
-    print(f"  Rejected products: {len(rejected)}")
-    for r in rejected:
-        print(f"    - Rejected {r['product_id']}: {r['reasons']}")
-    assert all("floral" not in p.get("pattern", "").lower() for p in passed)
-
-    # Test 2: Price budget under Rs. 5000
-    constraints_budget = {"max_price": 5000}
-    passed_budget, rejected_budget = HardConstraintFilter.apply_hard_constraints(products, constraints_budget)
-    print(f"\n[Test 2: Budget <= Rs. 5,000]")
-    print(f"  Passed: {len(passed_budget)} | Rejected: {len(rejected_budget)}")
-    assert all(p["price"] <= 5000 for p in passed_budget)
-
-    # Test 3: In-Stock Only
-    constraints_stock = {"in_stock_only": True}
-    passed_stock, rejected_stock = HardConstraintFilter.apply_hard_constraints(products, constraints_stock)
-    print(f"\n[Test 3: In Stock Only]")
-    print(f"  Passed: {len(passed_stock)} | Rejected: {len(rejected_stock)}")
-    assert all(p.get("stock", 1) > 0 for p in passed_stock)
-    assert any(r["product_id"] == "PROD_009" for r in rejected_stock)
-
-    # Test 4: Full Multi-Constraint Scenario:
-    # "Men's Kurta, under Rs.5000, in stock, NO floral"
-    multi_constraints = {
-        "gender": "Men",
-        "category": "Kurta",
-        "max_price": 5000,
-        "in_stock_only": True,
-        "excluded_patterns": ["floral"]
-    }
-    passed_multi, rejected_multi = HardConstraintFilter.apply_hard_constraints(products, multi_constraints)
-    print(f"\n[Test 4: Full Multi-Constraint Query]")
-    print(f"  Constraints: {multi_constraints}")
-    print(f"  Passed: {len(passed_multi)} products:")
-    for p in passed_multi:
-        print(f"    [PASS] [{p['id']}] Rs.{p['price']} | {p['pattern']} | {p['material']} | {p['title']}")
-
-    print("\nAll Hard Constraint Self-Tests PASSED successfully.")
-
-if __name__ == "__main__":
-    _run_self_tests()

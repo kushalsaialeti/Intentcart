@@ -1,14 +1,3 @@
-"""
-IntentCart - Master AI Discovery CLI
-Script: run_intentcart_ai.py
-
-Objective (Phase L12):
-Interactive and CLI execution of the full IntentCart AI Discovery Engine:
-1. Multi-model racing LLM extracts structured hard and soft constraints
-2. Deterministic ML pipeline performs FAISS retrieval, hard filtering, and hybrid ranking
-3. Grounded Explainer generates conversational stylist recommendations
-"""
-
 import sys
 import os
 import json

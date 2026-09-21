@@ -137,7 +137,7 @@ def health_check():
     active_providers = [f"{p.provider_name}:{p.model_name}" for p in router.get_configured_providers()]
     is_ready = pipeline is not None
     return {
-        "status": "ok",
+        "status": "healthy",
         "service": "IntentCart API",
         "ai_engine": "ready" if is_ready else "standby",
         "indexed_products": pipeline.retriever.index.ntotal if is_ready and pipeline.retriever else 1200,
@@ -173,13 +173,17 @@ async def search_api(req: SearchInput):
         ml_output = active_pipeline.run(**pipeline_kwargs, top_k=req.top_k)
 
 
-        # 4. Existing Grounded Conversational Explainer
-        explanation, explainer_meta = await grounded_explainer.explain_recommendations_async(
-            user_query=req.query,
-            hard_constraints=pipeline_kwargs["hard_constraints"],
-            soft_intent=pipeline_kwargs["soft_intent"],
-            pipeline_output=ml_output
-        )
+        # 4. Grounded Conversational Explainer (Skip if zero results to eliminate unnecessary LLM delay)
+        if ml_output["results"]:
+            explanation, explainer_meta = await grounded_explainer.explain_recommendations_async(
+                user_query=req.query,
+                hard_constraints=pipeline_kwargs["hard_constraints"],
+                soft_intent=pipeline_kwargs["soft_intent"],
+                pipeline_output=ml_output
+            )
+        else:
+            explanation = "No products in our current catalog exactly matched all your specified constraints. Try adjusting your budget or relaxing specific exclusions."
+            explainer_meta = {"provider": "direct", "model": "rule_based", "latency_ms": 0.0}
 
         total_latency = round((time.perf_counter() - start_total) * 1000, 2)
 
@@ -207,16 +211,12 @@ async def search_api(req: SearchInput):
             prod_url = f"https://www.myntra.com/{clean_id}"
             details["product_url"] = prod_url
 
-            # Real Original Dataset Image from Myntra
-            cached_entry = image_cache.get(clean_id)
-            if cached_entry and cached_entry.get("image_url"):
-                details["image_url"] = cached_entry["image_url"]
-            elif not details.get("image_url") or details.get("image_url") == "unknown" or str(details.get("image_url")).endswith(f"{clean_id}.jpg"):
-                # Dynamically resolve real photo via product ID
-                _, real_img, _ = resolve_single_product(clean_id)
-                if real_img:
-                    details["image_url"] = real_img
-                    image_cache[clean_id] = {"image_url": real_img, "product_url": prod_url}
+            # Zero-latency image assignment (prioritize existing valid CDN image, fallback to cache)
+            img_url = details.get("image_url")
+            if not img_url or img_url == "unknown":
+                cached_entry = image_cache.get(clean_id)
+                if cached_entry and cached_entry.get("image_url"):
+                    details["image_url"] = cached_entry["image_url"]
 
             formatted_results.append({
                 "rank": item["rank"],
@@ -230,6 +230,7 @@ async def search_api(req: SearchInput):
 
         return {
             "success": True,
+            "match_status": ml_output.get("match_status", "exact"),
             "query": req.query,
             "reformulated_query": schema.search_query,
             "intent": {
@@ -239,10 +240,13 @@ async def search_api(req: SearchInput):
             },
             "results": formatted_results,
             "metadata": {
+                "match_status": ml_output.get("match_status", "exact"),
                 "retrieved_count": ml_output["retrieved_count"],
                 "filtered_count": ml_output["filtered_count"],
                 "rejected_count": ml_output["rejected_count"],
                 "final_count": len(formatted_results),
+                "rejection_reasons": ml_output.get("rejection_reasons", [])[:20],
+                "trace": ml_output.get("trace", {}),
                 "telemetry": {
                     "intent_winner": f"{intent_meta.get('provider')} ({intent_meta.get('model')})",
                     "intent_latency_ms": intent_meta.get("latency_ms", 0.0),

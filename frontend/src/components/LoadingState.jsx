@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ThoughtLine from './ThoughtLine';
-import SkeletonGallery from './SkeletonGallery';
+import SkeletonGallery from './product/SkeletonGallery';
 
 const STAGES = [
   'Understanding your request...',

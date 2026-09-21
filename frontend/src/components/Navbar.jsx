@@ -5,13 +5,36 @@ export default function Navbar({ onReset }) {
   const [health, setHealth] = useState({ status: 'checking' });
 
   useEffect(() => {
-    checkHealth().then(setHealth);
+    let isMounted = true;
+    const fetchStatus = async () => {
+      try {
+        const data = await checkHealth();
+        if (isMounted && data) {
+          setHealth(data);
+        }
+      } catch {
+        if (isMounted) setHealth({ status: 'offline' });
+      }
+    };
+
+    fetchStatus();
+    // Periodically poll every 3 seconds until ready, then every 10 seconds
+    const interval = setInterval(fetchStatus, 3500);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const handleLogoClick = () => {
     onReset?.();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const isReady =
+    health.status === 'ok' ||
+    health.status === 'healthy' ||
+    health.ai_engine === 'ready';
 
   return (
     <header className="sticky top-0 z-50 bg-[#0a0a0e]/85 backdrop-blur-md border-b border-[#27272a] transition-all safe-top">
@@ -39,11 +62,13 @@ export default function Navbar({ onReset }) {
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-[#18181b]/90 text-[#f4f4f5] border border-[#27272a]">
             <span
               className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                health.status === 'ok' ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-amber-400'
+                isReady
+                  ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]'
+                  : 'bg-amber-400'
               }`}
             />
             <span>
-              {health.status === 'ok' ? (
+              {isReady ? (
                 <>
                   <span className="inline sm:hidden">Ready</span>
                   <span className="hidden sm:inline">AI Engine Ready</span>

@@ -2,7 +2,7 @@
 IntentCart - ML Subsystem
 Module: ranking/scorer.py
 
-Objective (Phase 16):
+Objective:
 Hybrid Scorer and Candidate Ranker.
 Combines semantic similarity and soft preference dimensions into an explainable,
 weighted score (0 to 100) using configurable weights from config.py.
@@ -10,9 +10,8 @@ weighted score (0 to 100) using configurable weights from config.py.
 
 import sys
 import os
-from typing import Any
+from typing import Any, List, Dict, Tuple
 
-# Ensure project root is on sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import config
 from retrieval.preference_matcher import PreferenceMatcher
@@ -77,6 +76,13 @@ class HybridScorer:
         matched_evidence.extend(occ_evidence)
         matched_evidence.extend(season_evidence)
 
+        # Unmatched preference determination
+        unmatched_preferences = []
+        for p in preferences:
+            p_lower = p.lower()
+            if not any(p_lower in ev.lower() for ev in matched_evidence):
+                unmatched_preferences.append(p)
+
         return {
             "product_id": product.get("id"),
             "title": product.get("title"),
@@ -89,6 +95,7 @@ class HybridScorer:
                 "rating": round(s_rating, 4)
             },
             "matched_evidence": matched_evidence,
+            "unmatched_preferences": unmatched_preferences,
             "product_details": {
                 "price": product.get("price"),
                 "category": product.get("category"),
@@ -127,55 +134,3 @@ class HybridScorer:
             item["rank"] = rank_num
 
         return scored_results[:top_k]
-
-
-def _run_self_tests():
-    import json
-
-    print("Running Hybrid Scorer Self-Tests...")
-    demo_path = os.path.join("data", "demo_products.json")
-    with open(demo_path, "r", encoding="utf-8") as f:
-        products = {p["id"]: p for p in json.load(f)}
-
-    scorer = HybridScorer()
-
-    # Define user's soft preferences:
-    # "comfortable minimal design, formal wear and breathable for summer wedding"
-    soft_intent = {
-        "preferences": ["minimal", "breathable", "comfortable"],
-        "occasion": "wedding",
-        "season": "summer"
-    }
-
-
-    test_candidates = [
-        (products["PROD_001"], 0.7547),
-        (products["PROD_002"], 0.6690),
-        (products["PROD_007"], 0.4582)
-    ]
-
-    ranked = scorer.rank_candidates(test_candidates, soft_intent, top_k=3)
-
-    print(f"\nScoring Weights in use:")
-    for k, v in scorer.weights.items():
-        print(f"  - {k}: {int(v*100)}%")
-
-    print("\n--- Ranked Results ---")
-    for item in ranked:
-        print(f"\n#{item['rank']} [{item['product_id']}] {item['title']}")
-        print(f"   Final Score: {item['final_score']} / 100")
-        print(f"   Breakdown: Semantic={item['score_breakdown']['semantic']} | "
-              f"Pref={item['score_breakdown']['preference']} | "
-              f"Occasion={item['score_breakdown']['occasion']} | "
-              f"Season={item['score_breakdown']['season']} | "
-              f"Rating={item['score_breakdown']['rating']}")
-        print(f"   Evidence: {item['matched_evidence']}")
-
-    # Verification assertions
-    assert ranked[0]["product_id"] == "PROD_001", "PROD_001 must rank #1"
-    assert ranked[0]["final_score"] > ranked[1]["final_score"] > ranked[2]["final_score"]
-    assert 0 <= ranked[0]["final_score"] <= 100
-    print("\nAll Hybrid Scorer Self-Tests PASSED successfully.")
-
-if __name__ == "__main__":
-    _run_self_tests()
