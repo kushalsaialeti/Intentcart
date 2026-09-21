@@ -1,7 +1,7 @@
 import React from 'react';
 import PromptBar from './PromptBar';
 
-export default function SearchBox({ query, setQuery, onSearch, isLoading }) {
+export default function SearchBox({ query, setQuery, onSearch, onStop, isLoading }) {
   const handleSend = (text, meta) => {
     if (text && !isLoading) {
       onSearch(text);
@@ -14,6 +14,7 @@ export default function SearchBox({ query, setQuery, onSearch, isLoading }) {
         value={query}
         onChange={setQuery}
         onSend={handleSend}
+        onStop={onStop}
         busy={isLoading}
         placeholder="Describe what you need in natural language..."
         width={680}

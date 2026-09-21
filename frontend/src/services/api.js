@@ -20,6 +20,7 @@ async function fetchWithFallback(endpointPath, options) {
       return res;
     }
   } catch (err) {
+    if (err.name === 'AbortError') throw err;
     console.warn(`Direct fetch to ${primaryUrl} failed, trying relative proxy...`, err);
   }
 
@@ -27,13 +28,14 @@ async function fetchWithFallback(endpointPath, options) {
   return await fetch(endpointPath, options);
 }
 
-export async function searchProducts(query, topK = 5) {
+export async function searchProducts(query, topK = 5, signal = null) {
   if (!query || !query.trim()) {
     throw new Error('Search query cannot be empty');
   }
 
   const response = await fetchWithFallback('/api/search', {
     method: 'POST',
+    signal,
     headers: {
       'Content-Type': 'application/json',
     },

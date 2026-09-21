@@ -267,12 +267,10 @@ export default function PromptBar({
     if (!canSend || busy) return;
     const trimmed = draft.trim();
     latest.current.onSend?.(trimmed, { attachments, model });
-    setDraft('');
-    onChange?.('');
+    // Keep draft intact so user can view and edit constraints
     setAttachments([]);
     setDismissed(false);
     closeMenus();
-    focusInput();
   };
 
   const onKeyDown = e => {

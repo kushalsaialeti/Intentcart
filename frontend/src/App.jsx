@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Navbar from './components/Navbar';
 import SearchBox from './components/SearchBox';
 import ExampleChips from './components/ExampleChips';
@@ -10,37 +10,69 @@ import EmptyState from './components/EmptyState';
 import ErrorState from './components/ErrorState';
 import ShapeGrid from './components/ShapeGrid';
 import { searchProducts } from './services/api';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function App() {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchData, setSearchData] = useState(null);
+  const [isStopped, setIsStopped] = useState(false);
+  const abortControllerRef = useRef(null);
 
   const handleSearch = async (searchQuery) => {
-    const q = searchQuery || query;
-    if (!q || !q.trim() || isLoading) return;
+    const q = searchQuery !== undefined ? searchQuery : query;
+    if (!q || !q.trim()) return;
+
+    // Abort any existing pending search
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     setQuery(q);
     setIsLoading(true);
     setError(null);
+    setIsStopped(false);
 
     try {
-      const response = await searchProducts(q, 5);
+      const response = await searchProducts(q, 5, controller.signal);
       setSearchData(response);
     } catch (err) {
+      if (err.name === 'AbortError') {
+        // Handled cleanly by handleStop
+        return;
+      }
       console.error('Search error:', err);
       setError(err.message || 'Unable to complete search request');
     } finally {
-      setIsLoading(false);
+      if (abortControllerRef.current === controller) {
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }
   };
 
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsLoading(false);
+    setIsStopped(true);
+  };
+
   const handleReset = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
     setQuery('');
     setSearchData(null);
     setError(null);
+    setIsStopped(false);
+    setIsLoading(false);
   };
 
   return (
@@ -82,6 +114,7 @@ export default function App() {
             query={query}
             setQuery={setQuery}
             onSearch={handleSearch}
+            onStop={handleStop}
             isLoading={isLoading}
           />
 
@@ -99,8 +132,34 @@ export default function App() {
         {/* Loading State */}
         {isLoading && <LoadingState />}
 
+        {/* Stopped / Interrupted State: "Oops" Red Card */}
+        {!isLoading && isStopped && (
+          <div className="w-full max-w-lg mx-auto my-6 p-6 sm:p-7 rounded-3xl bg-gradient-to-b from-[#240e13]/95 to-[#140608]/98 border border-rose-500/40 shadow-[0_0_50px_rgba(244,63,94,0.18)] backdrop-blur-xl text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-13 h-13 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-3.5 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+              <AlertCircle className="w-7 h-7 text-rose-400" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 tracking-tight">
+              Oops! Search Stopped
+            </h3>
+            <p className="text-xs sm:text-sm text-rose-200/70 max-w-md mx-auto mb-5 leading-relaxed">
+              Your search was interrupted. Your query and constraints are kept safe  above so you can tweak any detail!
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setIsStopped(false);
+                const input = document.querySelector('.prompt-bar__input');
+                input?.focus();
+              }}
+              className="px-6 py-2.5 sm:py-3 rounded-2xl font-bold text-xs sm:text-sm bg-gradient-to-r from-rose-500 via-rose-600 to-red-600 hover:from-rose-400 hover:to-red-500 text-white shadow-lg shadow-rose-950/70 hover:shadow-rose-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+            >
+              lets try something new for youu!!!
+            </button>
+          </div>
+        )}
+
         {/* Error State */}
-        {!isLoading && error && (
+        {!isLoading && !isStopped && error && (
           <ErrorState error={error} onRetry={() => handleSearch(query)} />
         )}
 
