@@ -148,9 +148,9 @@ export default function Explanation({ explanation }) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-5xl mx-auto my-6 sm:my-10 bg-[#131318]/90 backdrop-blur-md border border-[#27272a] rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl overflow-hidden text-[#f4f4f5]"
+      className="w-full max-w-5xl mx-auto my-6 sm:my-10 bg-[#08080b]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl overflow-hidden text-[#f4f4f5]"
     >
-      <div className="flex items-center gap-2.5 mb-4 pb-3.5 border-b border-[#27272a]">
+      <div className="flex items-center gap-2.5 mb-4 pb-3.5 border-b border-white/10">
         <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20 shrink-0">
           <Sparkles className="w-4 h-4" />
         </div>

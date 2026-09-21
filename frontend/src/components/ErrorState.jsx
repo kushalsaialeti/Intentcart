@@ -3,7 +3,7 @@ import { AlertCircle, RotateCcw } from 'lucide-react';
 
 export default function ErrorState({ error, onRetry }) {
   return (
-    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-[#131318]/90 backdrop-blur-md border border-rose-900/50 rounded-2xl p-5 sm:p-8 text-center shadow-xl text-[#f4f4f5]">
+    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-[#08080b]/95 backdrop-blur-xl border border-rose-900/50 rounded-2xl p-5 sm:p-8 text-center shadow-2xl text-[#f4f4f5]">
       <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-rose-950/40 border border-rose-800/50 flex items-center justify-center text-rose-400 mb-3 sm:mb-4">
         <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>

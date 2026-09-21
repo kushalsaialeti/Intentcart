@@ -29,14 +29,14 @@ export default function ProductCard({ item, rank }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: rank * 0.08 }}
-      className="bg-[#131318]/90 backdrop-blur-md border border-[#27272a] rounded-2xl overflow-hidden shadow-md hover:border-white/25 hover:shadow-xl transition-all duration-300 flex flex-col h-fit self-start w-full group text-[#f4f4f5]"
+      className="bg-[#08080b]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-white/25 hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-300 flex flex-col h-fit self-start w-full group text-[#f4f4f5]"
     >
       {/* Product Image & Top Badges — Clickable to open on Myntra */}
       <a
         href={productUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="relative aspect-[3/4] w-full bg-[#1c1c24] overflow-hidden block cursor-pointer"
+        className="relative aspect-[3/4] w-full bg-[#0e0e14] overflow-hidden block cursor-pointer"
         title={`View ${product.title} on Myntra`}
       >
         <img
@@ -47,42 +47,45 @@ export default function ProductCard({ item, rank }) {
           loading="lazy"
         />
 
+        {/* Seamless bottom fade into the black card body */}
+        <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#08080b] via-[#08080b]/40 to-transparent pointer-events-none" />
+
         {/* Hover overlay hint */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <span className="bg-[#18181b]/95 backdrop-blur-md text-white border border-white/20 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+          <span className="bg-black/90 backdrop-blur-md text-white border border-white/20 text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-xl flex items-center gap-1.5">
             <span>View on Myntra</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </span>
         </div>
 
         {/* Rank Badge */}
-        <div className="absolute top-2.5 left-2.5 bg-[#0a0a0e]/90 backdrop-blur-md text-white border border-white/10 text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-sm flex items-center gap-1 z-10">
+        <div className="absolute top-2.5 left-2.5 bg-black/85 backdrop-blur-md text-white border border-white/15 text-[11px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md shadow-md flex items-center gap-1 z-10">
           <span>#{rank}</span>
           <span className="text-amber-400">★</span>
         </div>
 
         {/* Original Dataset Verification Badge */}
         {isOriginalImage ? (
-          <div className="absolute top-2.5 right-2.5 bg-[#0a0a0e]/90 backdrop-blur-md text-emerald-300 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-500/40 shadow-xs flex items-center gap-1 z-10">
+          <div className="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur-md text-emerald-300 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-500/40 shadow-sm flex items-center gap-1 z-10">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />
             <span>Original Photo</span>
           </div>
         ) : (
           product.in_stock && (
-            <div className="absolute top-2.5 right-2.5 bg-[#0a0a0e]/90 backdrop-blur-md text-emerald-300 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-500/40 z-10">
+            <div className="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur-md text-emerald-300 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-md border border-emerald-500/40 z-10">
               In Stock
             </div>
           )
         )}
 
         {/* Category Pill on Image Bottom */}
-        <div className="absolute bottom-2.5 left-2.5 bg-[#0a0a0e]/90 backdrop-blur-md text-[#d4d4d8] border border-white/10 text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md z-10">
+        <div className="absolute bottom-2.5 left-2.5 bg-black/85 backdrop-blur-md text-[#d4d4d8] border border-white/15 text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-md z-10">
           {product.category || 'Apparel'} • {product.gender || 'Unisex'}
         </div>
       </a>
 
       {/* Card Details */}
-      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between">
+      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between bg-[#08080b]">
         <div>
           {/* Brand & Rating */}
           <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -121,17 +124,17 @@ export default function ProductCard({ item, rank }) {
           {/* Key Attributes Tags */}
           <div className="flex flex-wrap gap-1.5 mb-4 text-xs">
             {product.material && product.material !== 'unknown' && (
-              <span className="px-2 py-0.5 rounded bg-[#1f1f24] text-[#e4e4e7] border border-[#2e2e38] font-medium">
+              <span className="px-2 py-0.5 rounded bg-white/[0.06] text-[#e4e4e7] border border-white/10 font-medium">
                 {product.material}
               </span>
             )}
             {product.pattern && product.pattern !== 'unknown' && (
-              <span className="px-2 py-0.5 rounded bg-[#1f1f24] text-[#e4e4e7] border border-[#2e2e38] font-medium">
+              <span className="px-2 py-0.5 rounded bg-white/[0.06] text-[#e4e4e7] border border-white/10 font-medium">
                 {product.pattern}
               </span>
             )}
             {product.color && product.color !== 'unknown' && (
-              <span className="px-2 py-0.5 rounded bg-[#1f1f24] text-[#e4e4e7] border border-[#2e2e38] font-medium">
+              <span className="px-2 py-0.5 rounded bg-white/[0.06] text-[#e4e4e7] border border-white/10 font-medium">
                 {product.color}
               </span>
             )}
@@ -149,7 +152,7 @@ export default function ProductCard({ item, rank }) {
         </div>
 
         {/* Match Score & Expandable Explanation */}
-        <div className="pt-3 border-t border-[#27272a]">
+        <div className="pt-3 border-t border-white/10">
           {/* Score Bar */}
           <div className="mb-3">
             <div className="flex justify-between items-center text-xs font-semibold mb-1">
@@ -159,7 +162,7 @@ export default function ProductCard({ item, rank }) {
               </span>
               <span className="text-white font-bold">{score}% Match</span>
             </div>
-            <div className="w-full h-2 bg-[#1f1f24] rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(score, 100)}%` }}
@@ -188,10 +191,10 @@ export default function ProductCard({ item, rank }) {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="overflow-hidden mt-2 pt-2 border-t border-dashed border-[#27272a] text-xs space-y-2 text-[#d4d4d8]"
+                className="overflow-hidden mt-2 pt-2 border-t border-dashed border-white/10 text-xs space-y-2 text-[#d4d4d8]"
               >
                 {/* Score Breakdown factors */}
-                <div className="bg-[#1c1c24] border border-[#2e2e38] p-2.5 rounded-lg space-y-1">
+                <div className="bg-black/60 border border-white/10 p-2.5 rounded-lg space-y-1">
                   <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
                     ML Score Breakdown
                   </div>
@@ -248,7 +251,7 @@ export default function ProductCard({ item, rank }) {
             href={productUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full mt-3 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-200 text-[#0a0a0e] text-xs font-bold shadow-md transition-all duration-200 touch-manipulation group"
+            className="w-full mt-3 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-200 text-[#0a0a0e] text-xs font-bold shadow-lg transition-all duration-200 touch-manipulation group"
           >
             <span>Buy on Myntra</span>
             <ExternalLink className="w-3.5 h-3.5 text-neutral-700 group-hover:text-black transition-colors" />

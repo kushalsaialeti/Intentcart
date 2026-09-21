@@ -9,7 +9,7 @@ export default function SearchBox({ query, setQuery, onSearch, isLoading }) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center px-2 sm:px-0">
       <PromptBar
         value={query}
         onChange={setQuery}
@@ -17,6 +17,7 @@ export default function SearchBox({ query, setQuery, onSearch, isLoading }) {
         busy={isLoading}
         placeholder="Describe what you need in natural language..."
         width={680}
+        className="w-full"
       />
     </div>
   );

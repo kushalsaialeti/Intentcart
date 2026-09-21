@@ -35,10 +35,10 @@ export default function IntentPanel({ intent, metadata, reformulatedQuery }) {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full max-w-5xl mx-auto my-5 sm:my-8 bg-[#131318]/90 backdrop-blur-md border border-[#27272a] rounded-2xl p-4 sm:p-6 shadow-xl"
+      className="w-full max-w-5xl mx-auto my-5 sm:my-8 bg-[#08080b]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 shadow-2xl"
     >
       {/* Header & Racing Telemetry */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 sm:pb-4 border-b border-[#27272a]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 sm:pb-4 border-b border-white/10">
         <div>
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
             Engine Understanding

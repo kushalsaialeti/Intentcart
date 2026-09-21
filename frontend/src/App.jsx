@@ -58,7 +58,7 @@ export default function App() {
         />
       </div>
 
-      <Navbar />
+      <Navbar onReset={handleReset} />
 
       <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
         {/* Hero & Search Section */}

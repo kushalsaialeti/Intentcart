@@ -3,8 +3,8 @@ import { SearchX, RefreshCw } from 'lucide-react';
 
 export default function EmptyState({ onReset }) {
   return (
-    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-[#131318]/90 backdrop-blur-md border border-[#27272a] rounded-2xl p-5 sm:p-8 text-center shadow-xl text-[#f4f4f5]">
-      <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-[#1c1c24] flex items-center justify-center text-[#a1a1aa] mb-3 sm:mb-4 border border-[#2e2e38]">
+    <div className="w-full max-w-xl mx-auto my-8 sm:my-12 bg-[#08080b]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-8 text-center shadow-2xl text-[#f4f4f5]">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-[#14141a] flex items-center justify-center text-[#a1a1aa] mb-3 sm:mb-4 border border-white/10">
         <SearchX className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
       <h3 className="text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2">No Exact Matches Found</h3>
@@ -12,7 +12,7 @@ export default function EmptyState({ onReset }) {
         Every product in the retrieved pool was excluded by one or more strict constraints (such as an exact pattern exclusion or budget cap).
       </p>
 
-      <div className="bg-[#1c1c24] border border-[#2e2e38] rounded-xl p-4 text-left text-xs text-[#d4d4d8] mb-6 space-y-2">
+      <div className="bg-black/60 border border-white/10 rounded-xl p-4 text-left text-xs text-[#d4d4d8] mb-6 space-y-2">
         <span className="font-semibold text-white block mb-1">
           Suggestions to expand results:
         </span>

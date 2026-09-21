@@ -26,14 +26,14 @@ const EXAMPLES = [
 
 export default function ExampleChips({ onSelect, currentQuery, isLoading }) {
   return (
-    <div className="w-full max-w-3xl mx-auto mt-4 sm:mt-5">
-      <div className="flex items-center gap-2 mb-2 text-left">
+    <div className="w-full max-w-2xl mx-auto mt-4 sm:mt-5 px-2 sm:px-0">
+      <div className="flex items-center justify-center sm:justify-start gap-2 mb-2.5 text-center sm:text-left">
         <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#a1a1aa]">
           Try asking naturally:
         </span>
       </div>
-      {/* Scrollable on small devices, wrapped on tablets/desktops */}
-      <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap gap-1.5 sm:gap-2 pb-1 sm:pb-0 -mx-1 px-1 touch-pan-x">
+      {/* Symmetrically centered chips on mobile screens */}
+      <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2 pb-1 sm:pb-0">
         {EXAMPLES.map((item, idx) => {
           const isActive = currentQuery === item.query;
           return (
@@ -42,7 +42,7 @@ export default function ExampleChips({ onSelect, currentQuery, isLoading }) {
               whileTap={{ scale: 0.97 }}
               disabled={isLoading}
               onClick={() => onSelect(item.query)}
-              className={`text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 rounded-full border transition-all text-left whitespace-nowrap sm:whitespace-normal cursor-pointer active:opacity-80 touch-manipulation shrink-0 sm:shrink min-h-[32px] sm:min-h-[34px] flex items-center ${
+              className={`text-[11px] sm:text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer active:opacity-80 touch-manipulation min-h-[32px] sm:min-h-[34px] flex items-center text-center ${
                 isActive
                   ? 'bg-white text-[#0a0a0e] border-white shadow-sm font-semibold'
                   : 'bg-[#18181b]/70 backdrop-blur text-[#d4d4d8] border-[#27272a] hover:border-white/30 hover:bg-[#27272a] hover:text-white'
